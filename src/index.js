@@ -8,12 +8,12 @@ app.use(express.json());
 
 const repositories = [];
 
-function validateIdReturnIdx(request, response, next) {
-  const { id } = request.params;  
+function indexID(request, response, next) {  
+  const { id } = request.params;
   
-  if(!validate(id)){
-    return response.status(400).json({error: 'Invalid Id'});
-  }
+  //if(!validate(id)){
+  //  return response.status(400).json({error: 'Invalid Id'});
+  //}
 
   const repositoryIndex = repositories.findIndex(repository => repository.id === id);  
   if (repositoryIndex < 0) {
@@ -43,14 +43,13 @@ app.post("/repositories", (request, response) => {
   return response.status(201).json(repository);
 });
 
-//app.use(validateIdReturnIdx);
 
-app.put("/repositories/:id", (request, response) => {
+app.put("/repositories/:id", indexID, (request, response) => {
   const { id } = request.params;
-  const updatedRepository = request.body;
-   
-  delete updatedRepository.likes;
   
+  const updatedRepository = request.body;
+  delete updatedRepository.likes;
+
   const repositoryIndex = repositories.findIndex(repository => repository.id === id);
   if (repositoryIndex < 0) {
     return response.status(404).json({ error: "Repository not found" });
@@ -65,6 +64,7 @@ app.put("/repositories/:id", (request, response) => {
 
 app.delete("/repositories/:id", (request, response) => {
   const { id } = request.params;
+  console.log(repositoryIndex);
 
   const repositoryIndex = repositories.findIndex(repository => repository.id === id);
   if (repositoryIndex < 0) {
@@ -79,7 +79,7 @@ app.delete("/repositories/:id", (request, response) => {
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params; 
 
-  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  const repositoryIndex = repositories.findIndex(repository => repository.id === id);  
   if (repositoryIndex < 0) {
     return response.status(404).json({ error: "Repository not found" });
   }
